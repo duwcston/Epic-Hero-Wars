@@ -65,27 +65,27 @@ export class PlayerSkill {
     }
 
     private createEmptyRightBorder() {
-        this.emptyFrameR1 = this.scene.add.image(1300, 640, 'unit_frame')
+        this.emptyFrameR1 = this.scene.add.image(this.scene.scale.width - 250, 640, 'unit_frame')
             .setDepth(10)
             .setScale(0.25)
             .setScrollFactor(0, 0);
-        this.emptyFrameR2 = this.scene.add.image(1350, 640, 'unit_frame')
+        this.emptyFrameR2 = this.scene.add.image(this.scene.scale.width - 210, 640, 'unit_frame')
             .setDepth(10)
             .setScale(0.25)
             .setScrollFactor(0, 0);
-        this.emptyFrameR3 = this.scene.add.image(1300, 680, 'unit_frame')
+        this.emptyFrameR3 = this.scene.add.image(this.scene.scale.width - 250, 680, 'unit_frame')
             .setDepth(10)
             .setScale(0.25)
             .setScrollFactor(0, 0);
-        this.emptyFrameR4 = this.scene.add.image(1350, 680, 'unit_frame')
+        this.emptyFrameR4 = this.scene.add.image(this.scene.scale.width - 210, 680, 'unit_frame')
             .setDepth(10)
             .setScale(0.25)
             .setScrollFactor(0, 0);
-        this.emptyFrameR5 = this.scene.add.image(1300, 720, 'unit_frame')
+        this.emptyFrameR5 = this.scene.add.image(this.scene.scale.width - 250, 720, 'unit_frame')
             .setDepth(10)
             .setScale(0.25)
             .setScrollFactor(0, 0);
-        this.emptyFrameR6 = this.scene.add.image(1350, 720, 'unit_frame')
+        this.emptyFrameR6 = this.scene.add.image(this.scene.scale.width - 210, 720, 'unit_frame')
             .setDepth(10)
             .setScale(0.25)
             .setScrollFactor(0, 0);

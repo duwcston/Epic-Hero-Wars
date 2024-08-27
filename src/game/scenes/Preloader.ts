@@ -67,6 +67,8 @@ export class Preloader extends Scene {
         this.load.image('health_empty', 'health_empty.png');
         this.load.image('health_full', 'health_full.png');
         this.load.image('health2_full', 'health2_full.png');
+        this.load.image('install_button', 'install_button.png');
+        this.load.image('install_button_on', 'install_button_on.png');
     }
 
     create() {
