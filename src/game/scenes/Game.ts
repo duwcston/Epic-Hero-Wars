@@ -5,7 +5,10 @@ import { Enemy } from '../sprites/Enemy';
 import { Controller } from '../utils/Controller';
 import { PlayerHealth } from '../sprites/PlayerHealth';
 import { EnemyHealth } from '../sprites/EnemyHealth';
+import { Border } from '../utils/Border';
+import { UnitSpawner } from '../utils/UnitSpawner';
 import { PlayerSkill } from '../sprites/PlayerSkill';
+import { Unit } from '../sprites/Unit';
 
 export class Game extends Scene {
     camera: Phaser.Cameras.Scene2D.Camera;
@@ -17,17 +20,21 @@ export class Game extends Scene {
     topCutLeft: Phaser.GameObjects.Image;
     topCutRight: Phaser.GameObjects.Image;
     topCutMid: Phaser.GameObjects.Image;
-    player: Player;
-    enemy: Enemy;
-    controller: Controller;
     avatarFrameLeft: Phaser.GameObjects.Image;
     avatarFrameRight: Phaser.GameObjects.Image;
     athenaIcon: Phaser.GameObjects.Image;
     michaelIcon: Phaser.GameObjects.Image;
+    characterName: Phaser.GameObjects.Text;
+
+    border: Border;
+    player: Player;
+    enemy: Enemy;
+    controller: Controller;
     playerHealth: PlayerHealth;
     enemyHealth: EnemyHealth;
+    unitSpawner: UnitSpawner;
     playerSkill: PlayerSkill;
-    characterName: Phaser.GameObjects.Text;
+    unit: Unit;
 
     constructor() {
         super('Game');
@@ -63,7 +70,7 @@ export class Game extends Scene {
         //     .setScale(0.8)
         //     .setOrigin(1, 0);
         this.topCutMid = this.add.image(width as number / 2, 0, 'top_cut_mid')
-            .setScale(4, 0.6)
+            .setScale(4, 0.7)
             .setOrigin(0.5, 0)
             .setScrollFactor(0);
 
@@ -75,18 +82,23 @@ export class Game extends Scene {
         this.athenaIcon = this.add.image(width as number - 40, 45, 'athena-icon').setScale(0.7).setFlipX(true);
         this.characterName = this.add.text(width as number - 130, 40, 'Athena', { fontSize: '12px', color: '#ffff00' });
 
+        this.border = new Border(this);
+
         this.player = new Player(this, this.background);
         this.playerHealth = new PlayerHealth(this);
-        this.playerSkill = new PlayerSkill(this);
+        this.playerSkill = new PlayerSkill(this, this.player);
 
         this.enemy = new Enemy(this, this.background);
         this.enemyHealth = new EnemyHealth(this);
 
         this.controller = new Controller(this, this.player);
+        this.unitSpawner = new UnitSpawner(this, this.enemy);
+        this.unit = new Unit(this, this.enemy);
+
         EventBus.emit('current-scene-ready', this);
     }
 
     update() {
-
+        this.controller.unclickable(this.input.activePointer);
     }
 }

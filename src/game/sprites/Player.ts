@@ -1,4 +1,3 @@
-
 export class Player {
     scene: Phaser.Scene;
     background: Phaser.GameObjects.Image;

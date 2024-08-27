@@ -44,11 +44,17 @@ export class Preloader extends Scene {
         this.load.setPath('assets/UI/icons/');
         this.load.image('athena-icon', 'athena.png');
         this.load.image('michael-icon', 'michael.png');
+        this.load.image('unit-icon', 'unit.png');
+        this.load.image('michael_s1', 'michael_s1.png');
+        this.load.image('michael_s2', 'michael_s2.png');
+        this.load.image('michael_s3', 'michael_s3.png');
+        this.load.image('michael_s4', 'michael_s4.png');
 
         // Load Spine
         this.load.setPath('assets/spine');
         this.load.spine('michael', 'michael/michael.json', 'michael/michael.atlas');
         this.load.spine('athena', 'athena/athena.json', 'athena/athena.atlas');
+        this.load.atlas('unit', 'unit/unit.png', 'unit/unit.json');
 
         // Load Borders
         this.load.setPath('assets/UI/borders/');
@@ -72,6 +78,28 @@ export class Preloader extends Scene {
     }
 
     create() {
+        // Unit animations
+        this.anims.create({
+            key: 'walk',
+            frames: this.anims.generateFrameNames('unit', { prefix: 'walk', start: 1, end: 6, suffix: '-0' }),
+            frameRate: 10,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key: 'attack',
+            frames: this.anims.generateFrameNames('unit', { prefix: 'attack', start: 1, end: 5, suffix: '-0' }),
+            frameRate: 10,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key: 'die',
+            frames: this.anims.generateFrameNames('unit', { prefix: 'die', start: 1, end: 2, suffix: '-0' }),
+            frameRate: 10,
+            repeat: 0
+        });
+
         //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
         // this.scene.start('MainMenu');
         this.scene.start('Game');
