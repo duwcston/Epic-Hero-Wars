@@ -86,14 +86,15 @@ export class Game extends Scene {
 
         this.player = new Player(this, this.background);
         this.playerHealth = new PlayerHealth(this);
-        this.playerSkill = new PlayerSkill(this, this.player);
 
         this.enemy = new Enemy(this, this.background);
         this.enemyHealth = new EnemyHealth(this);
 
         this.controller = new Controller(this, this.player);
-        this.unitSpawner = new UnitSpawner(this, this.enemy);
+        this.unitSpawner = new UnitSpawner(this, this.enemy, this.background);
         this.unit = new Unit(this, this.enemy);
+        this.playerSkill = new PlayerSkill(this, this.player, this.enemy, this.enemyHealth);
+
 
         EventBus.emit('current-scene-ready', this);
     }

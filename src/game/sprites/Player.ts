@@ -21,6 +21,6 @@ export class Player {
         body.setOffset(250, 50);
         body.setCollideWorldBounds(true);
         body.setGravity(0, 300);
-        this.scene.physics.add.collider(this.player as unknown as Phaser.Physics.Arcade.Image, this.background, () => { })
+        this.scene.physics.add.collider(this.player as unknown as Phaser.Physics.Arcade.Image, this.background, () => { });
     }
 }

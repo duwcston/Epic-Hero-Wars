@@ -3,15 +3,17 @@ import { Enemy } from "../sprites/Enemy";
 
 export class UnitSpawner extends Unit {
     unitSpawnerButton: Phaser.GameObjects.Image;
+    background: Phaser.GameObjects.Image;
     cooldown: boolean;
     cooldownTime: number;
     cooldownText: Phaser.GameObjects.Text;
     skillOnCooldown: Phaser.GameObjects.Image;
     remainingCooldown: number;
 
-    constructor(scene: Phaser.Scene, enemy: Enemy) {
+    constructor(scene: Phaser.Scene, enemy: Enemy, background: Phaser.GameObjects.Image) {
         super(scene, enemy);
         this.cooldown = false;
+        this.background = background;
         this.cooldownTime = 2000;
         this.createUnitSpawnerButton();
     }
@@ -38,6 +40,7 @@ export class UnitSpawner extends Unit {
             this.unit = this.scene.physics.add.sprite(0, this.randomY(), 'unit').setDepth(10);
             this.unit.anims.play('walk');
             this.unitGroup.add(this.unit);
+            this.scene.physics.add.collider(this.unit, this.background, () => { });
             this.unitInteraction();
             this.startCooldown();
         }

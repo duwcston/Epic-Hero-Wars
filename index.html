@@ -11,14 +11,20 @@
     <meta name="ad.size" content="width=480,height=320">
     <!-- <script src="https://s0.2mdn.net/ads/studio/cached_libs/createjs_2019.11.15_min.js"></script>
     <script type="text/javascript" src="https://tpc.googlesyndication.com/pagead/gadgets/html5/api/exitapi.js"></script> -->
+    <style media='screen' type="text/css">
+        @font-face {
+            font-family: "Font1";
+            src: url('assets/font/LiberationSerif-Regular-height-extended.ttf');
+        }
+    </style>
     <style>
         button {
             background-color: transparent;
             background-image: url('/assets/UI/buttons/install_button.png');
             background-size: contain;
             background-repeat: no-repeat;
-            width: 100px;
-            height: 50px;
+            width: 90px;
+            height: 45px;
             border: none;
             cursor: pointer;
             position: absolute;
@@ -59,6 +65,7 @@
 <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <div style="font-family:'Font1'; display: none;">LiberationSerif</div>
     <!-- <script>
         function handleClick() {
             const button = document.getElementById('actionButton');

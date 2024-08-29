@@ -59,11 +59,7 @@ export class Preloader extends Scene {
         // Load Borders
         this.load.setPath('assets/UI/borders/');
         this.load.image('skill_frame', '4.png');
-        this.load.image('skill_frame_on', '4_down.png');
-        this.load.image('skill_frame_disable', '4_disable.png');
         this.load.image('unit_frame', '0.png');
-        this.load.image('unit_frame_on', '0_down.png');
-        this.load.image('unit_frame_disable', '0_disable.png');
 
         // Load Buttons
         this.load.setPath('assets/UI/buttons/');

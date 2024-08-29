@@ -3,11 +3,51 @@ export class EnemyHealth {
     enemyHealthFrame: Phaser.GameObjects.Image;
     enemyHealthEmpty: Phaser.GameObjects.Image;
     enemyHealthBar: Phaser.GameObjects.Image;
+    private static _enemyHealth: EnemyHealth;
+    private _enemyMaxHealth: number = 57000;
+    private _enemyHealth: number = this._enemyMaxHealth;
+    private _enemyHealthText: Phaser.GameObjects.Text;
+
+    static get enemyHealth() {
+        return EnemyHealth._enemyHealth;
+    }
 
     constructor(scene: Phaser.Scene) {
+        EnemyHealth._enemyHealth = this;
         this.scene = scene;
         this.createEnemyHealthBar();
+        this.createEnemyHealthText();
     }
+
+    get enemyHealth() {
+        return this._enemyHealth;
+    }
+
+    get enemyMaxHealth() {
+        return this._enemyMaxHealth;
+    }
+
+    get enemyHealthText() {
+        return this._enemyHealthText;
+    }
+
+    // Fix the display of the enemy health bar
+    public takeDamage(damage: number) {
+        if (damage > 0) {
+            this._enemyHealth -= damage;
+            if (this._enemyHealth < 0) this._enemyHealth = 0;
+            this._enemyHealthText.setText(`${this._enemyHealth}`);
+            const newScaleX = this._enemyHealth / this._enemyMaxHealth;
+            
+            this.enemyHealthBar.setOrigin(0, 0.5);
+            this.scene.tweens.add({
+                targets: this.enemyHealthBar,
+                scaleX: newScaleX,
+                duration: 300,
+                ease: 'Power2',
+            });
+        }
+    }    
 
     private createEnemyHealthBar() {
         this.enemyHealthFrame = this.createEnemyHealthImage('health_frame');
@@ -33,4 +73,14 @@ export class EnemyHealth {
         this.updateEnemyHealthBarScale();
     }
 
+    private createEnemyHealthText() {
+        this._enemyHealthText = this.scene.add.text(this.scene.scale.width / 4 * 3, 5, `${this._enemyHealth}`, {
+            fontSize: '16px',
+            align: 'center',
+            fontFamily: 'Font1',
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 6,
+        }).setDepth(10);
+    }
 }

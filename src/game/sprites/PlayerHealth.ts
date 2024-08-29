@@ -3,10 +3,32 @@ export class PlayerHealth {
     playerHealthBar: Phaser.GameObjects.Image;
     playerHealthEmpty: Phaser.GameObjects.Image;
     playerHealthFull: Phaser.GameObjects.Image;
+    private static _playerHealth: PlayerHealth;
+    private _playerMaxHealth: number = 96300;
+    private _playerHealth: number = this._playerMaxHealth;
+    private _playerHealthText: Phaser.GameObjects.Text;
+
+    static get playerHealth() {
+        return PlayerHealth._playerHealth;
+    }
 
     constructor(scene: Phaser.Scene) {
+        PlayerHealth._playerHealth = this;
         this.scene = scene;
         this.createPlayerHealthBar();
+        this.createPlayerHealthText();
+    }
+
+    get playerHealth() {
+        return this._playerHealth;
+    }
+
+    get playerMaxHealth() {
+        return this._playerMaxHealth;
+    }
+
+    get playerHealthText() {
+        return this._playerHealthText;
     }
 
     private createPlayerHealthBar() {
@@ -31,5 +53,16 @@ export class PlayerHealth {
 
     private onResize() {
         this.updateHealthBarScale();
+    }
+
+    private createPlayerHealthText() {
+        this._playerHealthText = this.scene.add.text(this.scene.scale.width / 4, 5, `${this._playerHealth}`, {
+            fontSize: '16px',
+            align: 'center',
+            fontFamily: 'Font1',
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 6,
+        }).setDepth(10);
     }
 }
