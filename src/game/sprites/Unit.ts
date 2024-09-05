@@ -8,6 +8,7 @@ export class Unit {
     protected unitMaxHealth: number = 100;
     protected unitHealth: number = this.unitMaxHealth;
     protected unitDamage: number = 10;
+    protected unitDamageOverlay: Phaser.GameObjects.Text;
 
     constructor(scene: Phaser.Scene, enemy: Enemy) {
         this.scene = scene;
@@ -27,6 +28,7 @@ export class Unit {
                             this.attackEnemy(unit);
                         }
                         else {
+                            (unit as unknown as Phaser.Physics.Arcade.Sprite).setFlip((unit as unknown as Phaser.Physics.Arcade.Sprite).x < this.enemy.enemy.x ? false : true, false);
                             this.followEnemy(unit, 100);
                         }
                     }
@@ -44,6 +46,7 @@ export class Unit {
             callback: () => {
                 if (this.enemy.enemy) {
                     EnemyHealth.enemyHealth.takeDamage(this.unitDamage);
+                    this.showDamageOverlay();
                 }
             },
             loop: false
@@ -52,5 +55,25 @@ export class Unit {
 
     protected followEnemy(unit: Phaser.GameObjects.GameObject, speed: number) {
         this.scene.physics.moveToObject(unit, this.enemy.enemy as unknown as Phaser.Physics.Arcade.Sprite, speed);
+    }
+
+    protected showDamageOverlay() {
+        this.unitDamageOverlay = this.scene.add.text(this.enemy.enemy.x, this.enemy.enemy.y - 50, `${this.unitDamage}`, {
+            fontSize: '24px',
+            color: '#ff0000',
+            stroke: '#000000',
+            strokeThickness: 4,
+        });
+
+        this.scene.tweens.add({
+            targets: this.unitDamageOverlay,
+            y: this.enemy.enemy.y - 100,
+            alpha: 0,
+            duration: 1000,
+            ease: 'Linear',
+            onComplete: () => {
+                this.unitDamageOverlay.destroy();
+            }
+        });
     }
 }

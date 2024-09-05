@@ -9,6 +9,7 @@ export class UnitSpawner extends Unit {
     cooldownText: Phaser.GameObjects.Text;
     skillOnCooldown: Phaser.GameObjects.Image;
     remainingCooldown: number;
+    unitHealthBars: { unit: Phaser.Physics.Arcade.Sprite, healthBar: Phaser.GameObjects.Image }[] = [];
 
     constructor(scene: Phaser.Scene, enemy: Enemy, background: Phaser.GameObjects.Image) {
         super(scene, enemy);
@@ -16,6 +17,8 @@ export class UnitSpawner extends Unit {
         this.background = background;
         this.cooldownTime = 2000;
         this.createUnitSpawnerButton();
+        this.scene.events.on('update', this.updateUnitHealthBars, this);  // Listen to the update event
+
     }
 
     private createUnitSpawnerButton() {
@@ -31,7 +34,7 @@ export class UnitSpawner extends Unit {
         return Phaser.Math.Between(this.scene.scale.height / 2 - 30, this.scene.scale.height / 2 + 100);
     }
 
-    protected spawnUnit() {
+    private spawnUnit() {
         if (this.cooldown) {
             return;
         }
@@ -43,6 +46,10 @@ export class UnitSpawner extends Unit {
             this.scene.physics.add.collider(this.unit, this.background, () => { });
             this.unitInteraction();
             this.startCooldown();
+
+            // Create health bar for each unit and store it
+            const healthBar = this.createUnitHealthBar(this.unit);
+            this.unitHealthBars.push({ unit: this.unit, healthBar });
         }
     }
 
@@ -83,5 +90,16 @@ export class UnitSpawner extends Unit {
         if (this.remainingCooldown <= 0) {
             this.cooldownText.setText('');
         }
+    }
+
+    private createUnitHealthBar(unit: Phaser.Physics.Arcade.Sprite): Phaser.GameObjects.Image {
+        return this.scene.add.image(unit.x, unit.y, 'health_full').setDepth(10).setScale(0.2, 0.4);
+    }
+
+    private updateUnitHealthBars() {
+        // Update the position of each health bar to match its unit's position
+        this.unitHealthBars.forEach(pair => {
+            pair.healthBar.setPosition(pair.unit.x, pair.unit.y - 40);
+        });
     }
 }

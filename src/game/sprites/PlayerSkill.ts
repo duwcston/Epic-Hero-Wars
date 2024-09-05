@@ -137,56 +137,42 @@ export class PlayerSkill {
         let color = 0xffffff;
         const alpha = 0.5;
 
+        // Define hitbox properties based on the skill
         switch (skill) {
             case 'attack':
                 width = 370;
                 height = 50;
                 color = 0xff0000; // Red for attack
-                this.hitbox = this.scene.add.rectangle(baseX, baseY, width, height, color, alpha) as unknown as Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
-                this.scene.physics.add.existing(this.hitbox);
-                this.hitbox.setVisible(true);
-                this.hitbox.body.enable = true;
-
-                // Set a timer to create a new hitbox and remove the previous one
-                this.scene.time.delayedCall(500, () => {
-                    this.hitbox.destroy();
-                    const newWidth = 350;
-                    const newHeight = 50;
-                    const newColor = 0xff00ff; // Magenta for the new hitbox
-                    this.hitbox = this.scene.add.rectangle(baseX + 50, baseY + 50, newWidth, newHeight, newColor, alpha) as unknown as Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
-                    this.scene.physics.add.existing(this.hitbox);
-                    this.hitbox.setVisible(true);
-                    this.hitbox.body.enable = true;
-                    this.updateHitboxPosition('attack_phase2');
-                });
                 break;
             case 'skill1':
                 width = 700;
                 height = 50;
                 color = 0x00ff00; // Green for skill1
-                this.hitbox = this.scene.add.rectangle(baseX, baseY, width, height, color, alpha) as unknown as Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
                 break;
             case 'skill2':
                 width = 150;
                 height = 100;
                 color = 0x0000ff; // Blue for skill2
-                this.hitbox = this.scene.add.rectangle(baseX, baseY, width, height, color, alpha) as unknown as Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
                 break;
             case 'skill4':
                 width = 100;
                 height = 100;
                 color = 0xffff00; // Yellow for skill4
-                this.hitbox = this.scene.add.rectangle(baseX, baseY, width, height, color, alpha) as unknown as Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
                 break;
             default:
                 break;
         }
+
+        // Create the hitbox and set its properties
+        this.hitbox = this.scene.add.rectangle(baseX, baseY, width, height, color, alpha) as unknown as Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
         this.scene.physics.add.existing(this.hitbox);
+        this.hitbox.setData('skill', skill); // Store the skill name in the hitbox data
         this.hitbox.setVisible(true);
         this.hitbox.body.enable = true;
 
         // Set hitbox overlap callback
         this.scene.physics.add.overlap(this.hitbox, this.enemy.enemy as unknown as Phaser.GameObjects.GameObject, this.handleHitboxEnemyOverlap, undefined, this);
+        // this.scene.physics.add.overlap(this.hitbox, this.unitEnemy as unknown as Phaser.GameObjects.GameObject, this.handleHitboxEnemyOverlap, undefined, this);
     }
 
     private updateHitboxPosition(skill: string) {
@@ -252,9 +238,11 @@ export class PlayerSkill {
     }
 
     // Fix this to handle the skill damage
-    private handleHitboxEnemyOverlap(hitbox: Phaser.Types.Physics.Arcade.ImageWithDynamicBody, enemy: Enemy, skill: string) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    private handleHitboxEnemyOverlap(hitbox: Phaser.Types.Physics.Arcade.ImageWithDynamicBody, _enemy: Enemy) {
         if (!this._hitEnemy) {
             this._hitEnemy = true;
+            const skill = hitbox.getData('skill'); // Retrieve the skill name from hitbox data
             this.applyDamage(skill);
             this.showDamageOverlay(skill);
         }
@@ -281,8 +269,25 @@ export class PlayerSkill {
     }
 
     private showDamageOverlay(skill: string) {
-        this.damageOverlay = this.scene.add.text(this.enemy.enemy.x, this.enemy.enemy.y - 200, `this._${skill}Damage`.toString(), {
-            fontSize: '24px',
+        let damage = 0;
+        switch (skill) {
+            case 'attack':
+                damage = this._attackDamage;
+                break;
+            case 'skill1':
+                damage = this._skill1Damage;
+                break;
+            case 'skill2':
+                damage = this._skill2Damage;
+                break;
+            case 'skill4':
+                damage = this._skill4Damage;
+                break;
+            default:
+                break;
+        }
+        this.damageOverlay = this.scene.add.text(this.enemy.enemy.x, this.enemy.enemy.y - 200, damage.toString(), {
+            fontSize: '36px',
             color: '#ff0000',
             stroke: '#000000',
             strokeThickness: 4,
@@ -292,9 +297,9 @@ export class PlayerSkill {
         this.scene.tweens.add({
             targets: this.damageOverlay,
             alpha: 0,
-            duration: 500,
+            duration: 1000,
             onComplete: () => {
-                this._hitEnemy = false; // Reset for future overlaps
+                this._hitEnemy = false;
             },
         });
     }

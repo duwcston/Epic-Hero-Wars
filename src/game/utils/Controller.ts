@@ -58,7 +58,7 @@ export class Controller {
         const speed = PLAYER_SPEED;
         const duration = (distance / speed) * 1000;
 
-        if (!PlayerSkill.playerSkill.isDoingSkill) {
+        if (!PlayerSkill.playerSkill.isDoingSkill && this._clickable) {
             if (pointer.x > playerSprite.x) {
                 this._flipSpine(playerSprite, false, 0.3);
                 (playerSprite.body as Phaser.Physics.Arcade.Body).setVelocity(speed, 0);
@@ -92,7 +92,7 @@ export class Controller {
         const speed = PLAYER_SPEED;
 
         if (!PlayerSkill.playerSkill.isDoingSkill) {
-            // this._flipSpine(playerSprite, true, 0.3);
+            this._flipSpine(playerSprite, true, 0.3);
             (playerSprite.body as Phaser.Physics.Arcade.Body).setVelocity(-speed, 0);
             playerSprite.setAnimation(0, 'walk', true);
 
@@ -120,8 +120,8 @@ export class Controller {
         const playerSprite = this.player.player;
         const speed = PLAYER_SPEED;
 
-        if (this._clickable && !PlayerSkill.playerSkill.isDoingSkill) {
-            // this._flipSpine(playerSprite, false, 0.3);
+        if (!PlayerSkill.playerSkill.isDoingSkill) {
+            this._flipSpine(playerSprite, false, 0.3);
             (playerSprite.body as Phaser.Physics.Arcade.Body).setVelocity(speed, 0);
             playerSprite.setAnimation(0, 'walk', true);
 

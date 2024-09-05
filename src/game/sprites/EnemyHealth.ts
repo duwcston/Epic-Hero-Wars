@@ -37,17 +37,13 @@ export class EnemyHealth {
             this._enemyHealth -= damage;
             if (this._enemyHealth < 0) this._enemyHealth = 0;
             this._enemyHealthText.setText(`${this._enemyHealth}`);
-            const newScaleX = this._enemyHealth / this._enemyMaxHealth;
-            
-            this.enemyHealthBar.setOrigin(0, 0.5);
-            this.scene.tweens.add({
-                targets: this.enemyHealthBar,
-                scaleX: newScaleX,
-                duration: 300,
-                ease: 'Power2',
-            });
+            const damagePercentage = damage / this._enemyHealth;
+            // console.log('Health bar width before:', this.enemyHealthBar.width);
+            this.enemyHealthBar.width = this.enemyHealthBar.width - (this.enemyHealthBar.width * damagePercentage);
+            this.enemyHealthBar.setCrop(0, 0, this.enemyHealthBar.width, this.enemyHealthBar.height);
+            // console.log('Health bar width after:', this.enemyHealthBar.width);
         }
-    }    
+    }
 
     private createEnemyHealthBar() {
         this.enemyHealthFrame = this.createEnemyHealthImage('health_frame');

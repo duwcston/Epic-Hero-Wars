@@ -65,4 +65,15 @@ export class PlayerHealth {
             strokeThickness: 6,
         }).setDepth(10);
     }
+
+    public playerTakeDamage(damage: number) {
+        if (damage > 0) {
+            this._playerHealth -= damage;
+            if (this._playerHealth < 0) this._playerHealth = 0;
+            this._playerHealthText.setText(`${this._playerHealth}`);
+            const damagePercentage = damage / this._playerHealth;
+            this.playerHealthFull.width = this.playerHealthFull.width - (this.playerHealthFull.width * damagePercentage);
+            this.playerHealthFull.setCrop(0, 0, this.playerHealthFull.width, this.playerHealthFull.height);
+        }
+    }
 }

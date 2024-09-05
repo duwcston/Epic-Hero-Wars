@@ -9,6 +9,8 @@ import { Border } from '../utils/Border';
 import { UnitSpawner } from '../utils/UnitSpawner';
 import { PlayerSkill } from '../sprites/PlayerSkill';
 import { Unit } from '../sprites/Unit';
+import { UnitEnemySpawner } from '../utils/UnitEnemySpawner';
+import { UnitEnemy } from '../sprites/UnitEnemy';
 
 export class Game extends Scene {
     camera: Phaser.Cameras.Scene2D.Camera;
@@ -35,6 +37,8 @@ export class Game extends Scene {
     unitSpawner: UnitSpawner;
     playerSkill: PlayerSkill;
     unit: Unit;
+    unitEnemySpawner: UnitEnemySpawner;
+    unitEnemy: UnitEnemy;
 
     constructor() {
         super('Game');
@@ -87,14 +91,18 @@ export class Game extends Scene {
         this.player = new Player(this, this.background);
         this.playerHealth = new PlayerHealth(this);
 
-        this.enemy = new Enemy(this, this.background);
+        this.enemy = new Enemy(this, this.background, this.player);
         this.enemyHealth = new EnemyHealth(this);
 
         this.controller = new Controller(this, this.player);
+
         this.unitSpawner = new UnitSpawner(this, this.enemy, this.background);
         this.unit = new Unit(this, this.enemy);
+
         this.playerSkill = new PlayerSkill(this, this.player, this.enemy, this.enemyHealth);
 
+        this.unitEnemySpawner = new UnitEnemySpawner(this, this.player, this.background);
+        this.unitEnemy = new UnitEnemy(this, this.player);
 
         EventBus.emit('current-scene-ready', this);
     }
