@@ -1,10 +1,11 @@
 import { Enemy } from "./Enemy";
 import { EnemyHealth } from "./EnemyHealth";
+
 export class Unit {
     scene: Phaser.Scene;
     unit: Phaser.Physics.Arcade.Sprite;
     enemy: Enemy;
-    protected unitGroup: Phaser.Physics.Arcade.Group;
+    public unitGroup: Phaser.Physics.Arcade.Group;
     protected unitMaxHealth: number = 100;
     protected unitHealth: number = this.unitMaxHealth;
     protected unitDamage: number = 10;
@@ -12,7 +13,10 @@ export class Unit {
 
     constructor(scene: Phaser.Scene, enemy: Enemy) {
         this.scene = scene;
-        this.unitGroup = this.scene.physics.add.group();
+        this.unitGroup = this.scene.physics.add.group({
+            maxSize: 10,
+            runChildUpdate: true
+        });
         this.enemy = enemy;
     }
 
@@ -22,7 +26,7 @@ export class Unit {
             callback: () => {
                 const units = this.unitGroup.getChildren();
                 units.forEach((unit) => {
-                    if (unit && this.enemy.enemy) {
+                    if (unit && this.enemy.enemy && this.unitHealth > 0) {
                         const distance = Phaser.Math.Distance.Between((unit as unknown as Phaser.Physics.Arcade.Sprite).x, (unit as unknown as Phaser.Physics.Arcade.Sprite).y, this.enemy.enemy.x, this.enemy.enemy.y);
                         if (distance < 100) {
                             this.attackEnemy(unit);

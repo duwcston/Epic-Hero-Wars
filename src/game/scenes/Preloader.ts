@@ -56,6 +56,11 @@ export class Preloader extends Scene {
         this.load.spine('athena', 'athena/athena.json', 'athena/athena.atlas');
         this.load.atlas('unit', 'unit/unit.png', 'unit/unit.json');
 
+        // Load Athena's bullets
+        this.load.setPath('assets/spine/athena/bullets/');
+        this.load.image('attack_shoot', 'attack_shoot.png');
+        this.load.image('attack_explode', 'attack_explode.png');
+
         // Load Borders
         this.load.setPath('assets/UI/borders/');
         this.load.image('skill_frame', '4.png');

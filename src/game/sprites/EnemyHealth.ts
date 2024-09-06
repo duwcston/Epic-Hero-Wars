@@ -42,6 +42,13 @@ export class EnemyHealth {
             this.enemyHealthBar.width = this.enemyHealthBar.width - (this.enemyHealthBar.width * damagePercentage);
             this.enemyHealthBar.setCrop(0, 0, this.enemyHealthBar.width, this.enemyHealthBar.height);
             // console.log('Health bar width after:', this.enemyHealthBar.width);
+            this.scene.time.addEvent({
+                delay: 500,
+                callback: () => {
+                    this.enemyHealthEmpty.setCrop(0, 0, this.enemyHealthBar.width, this.enemyHealthBar.height);
+                },
+                loop: false
+            });
         }
     }
 

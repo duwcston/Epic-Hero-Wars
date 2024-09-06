@@ -1,8 +1,8 @@
 export class PlayerHealth {
     scene: Phaser.Scene;
-    playerHealthBar: Phaser.GameObjects.Image;
+    playerHealthFrame: Phaser.GameObjects.Image;
     playerHealthEmpty: Phaser.GameObjects.Image;
-    playerHealthFull: Phaser.GameObjects.Image;
+    playerHealthBar: Phaser.GameObjects.Image;
     private static _playerHealth: PlayerHealth;
     private _playerMaxHealth: number = 96300;
     private _playerHealth: number = this._playerMaxHealth;
@@ -32,9 +32,9 @@ export class PlayerHealth {
     }
 
     private createPlayerHealthBar() {
-        this.playerHealthBar = this.createHealthImage('health_frame');
+        this.playerHealthFrame = this.createHealthImage('health_frame');
         this.playerHealthEmpty = this.createHealthImage('health_empty');
-        this.playerHealthFull = this.createHealthImage('health_full');
+        this.playerHealthBar = this.createHealthImage('health_full');
         this.updateHealthBarScale();
 
         this.scene.scale.on('resize', this.onResize, this);
@@ -46,9 +46,9 @@ export class PlayerHealth {
 
     private updateHealthBarScale() {
         const scale = this.scene.scale.width / 800;  // Adjust 800 to your desired reference width
-        this.playerHealthBar.setScale(scale, 1);
+        this.playerHealthFrame.setScale(scale, 1);
         this.playerHealthEmpty.setScale(scale, 1);
-        this.playerHealthFull.setScale(scale, 1);
+        this.playerHealthBar.setScale(scale, 1);
     }
 
     private onResize() {
@@ -72,8 +72,15 @@ export class PlayerHealth {
             if (this._playerHealth < 0) this._playerHealth = 0;
             this._playerHealthText.setText(`${this._playerHealth}`);
             const damagePercentage = damage / this._playerHealth;
-            this.playerHealthFull.width = this.playerHealthFull.width - (this.playerHealthFull.width * damagePercentage);
-            this.playerHealthFull.setCrop(0, 0, this.playerHealthFull.width, this.playerHealthFull.height);
+            this.playerHealthBar.width = this.playerHealthBar.width - (this.playerHealthBar.width * damagePercentage);
+            this.playerHealthBar.setCrop(0, 0, this.playerHealthBar.width, this.playerHealthBar.height);
+            this.scene.time.addEvent({
+                delay: 500,
+                callback: () => {
+                    this.playerHealthEmpty.setCrop(0, 0, this.playerHealthBar.width, this.playerHealthBar.height);
+                },
+                loop: false
+            });
         }
     }
 }

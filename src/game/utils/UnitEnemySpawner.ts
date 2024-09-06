@@ -7,6 +7,7 @@ export class UnitEnemySpawner extends UnitEnemy {
     cooldownTime: number;
     remainingCooldown: number;
     unitEnemyHealthBars: { unitEnemy: Phaser.Physics.Arcade.Sprite, healthBar: Phaser.GameObjects.Image }[] = [];
+    private _unitEnemyCounter: number = 0;
 
     constructor(scene: Phaser.Scene, player: Player, background: Phaser.GameObjects.Image, cooldownTime: number = 3000) {
         super(scene, player);
@@ -14,7 +15,6 @@ export class UnitEnemySpawner extends UnitEnemy {
         this.cooldownTime = cooldownTime;
         this.startSpawningEnemies(); // Automatically start the spawning process
         this.scene.events.on('update', this.updateUnitEnemyHealthBars, this);  // Listen to the update event
-
     }
 
     private randomY() {
@@ -23,12 +23,15 @@ export class UnitEnemySpawner extends UnitEnemy {
 
     // Automatically spawns enemies at regular intervals
     private startSpawningEnemies() {
-        this.scene.time.addEvent({
+        const spawner = this.scene.time.addEvent({
             delay: this.cooldownTime, // Delay between spawns
             callback: () => {
                 if (!this.cooldown) {
                     this.spawnEnemies();
                     this.startCooldown(); // Start cooldown after spawning
+                }
+                if (this._unitEnemyCounter >= 10) {
+                    spawner.remove(); // Stop spawning after 10 units
                 }
             },
             loop: true // Repeats the spawning indefinitely
@@ -37,18 +40,19 @@ export class UnitEnemySpawner extends UnitEnemy {
 
     // Spawns 2 player units
     private spawnEnemies() {
-        for (let i = 0; i < 2; i++) {
-            this.unitEnemy = this.scene.physics.add.sprite(this.scene.scale.width, this.randomY(), 'unit').setDepth(10); // Spawn player units
-            this.unitEnemy.setFlipX(true);
-            this.unitEnemy.anims.play('walk');
-            this.unitEnemyGroup.add(this.unitEnemy);
-            this.scene.physics.add.collider(this.unitEnemy, this.background, () => { });
-            this.unitEnemyInteraction(); // Handle interaction with enemies
+        // for (let i = 0; i < 2; i++) {
+        this.unitEnemy = this.scene.physics.add.sprite(this.scene.scale.width, this.randomY(), 'unit'); // Spawn player units
+        this.unitEnemy.setFlipX(true);
+        this.unitEnemy.anims.play('walk');
+        this.unitEnemyGroup.add(this.unitEnemy);
+        this.unitEnemyHealth = this.unitEnemyMaxHealth;
+        this.scene.physics.add.collider(this.unitEnemy, this.background, () => { });
+        this.unitEnemyInteraction(); // Handle interaction with players
 
-            // Create health bar for each unit and store it
-            const healthBar = this.createUnitEnemyHealthBar(this.unitEnemy);
-            this.unitEnemyHealthBars.push({ unitEnemy: this.unitEnemy, healthBar });
-        }
+        const healthBar = this.createUnitEnemyHealthBar(this.unitEnemy);
+        this.unitEnemyHealthBars.push({ unitEnemy: this.unitEnemy, healthBar });
+        // }
+        this._unitEnemyCounter += 1;
     }
 
     private startCooldown() {
@@ -77,4 +81,32 @@ export class UnitEnemySpawner extends UnitEnemy {
             pair.healthBar.setPosition(pair.unitEnemy.x, pair.unitEnemy.y - 40);
         });
     }
+
+    public takeDamage(damage: number, unitEnemy: Phaser.Physics.Arcade.Sprite) {
+        this.unitEnemyHealth -= damage;
+
+        if (this.unitEnemyHealth <= 0) {
+            // Only affect the specific unit that took damage
+            unitEnemy.anims.play('die', true);
+            // Get the current anims
+            if (unitEnemy.anims.currentAnim?.key === 'die') {
+                this.unitEnemyHealthBars.forEach(bar => {
+                    bar.healthBar.destroy();
+                });
+                unitEnemy.setVelocityX(0); // Stop the unit from moving
+            }
+
+            // Delay the destruction of this specific unit after the 'die' animation
+            this.scene.time.addEvent({
+                delay: 3000, // Longer delay for the 'die' animation
+                callback: () => {
+                    // unitEnemy.destroy();
+                    this.unitEnemyGroup.remove(unitEnemy, true, true);
+                    this._unitEnemyCounter--;
+                },
+                loop: false
+            });
+        }
+    }
+
 }

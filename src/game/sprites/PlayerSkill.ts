@@ -2,7 +2,8 @@ import { Controller } from '../utils/Controller';
 import { Player } from './Player';
 import { Enemy } from './Enemy';
 import { EnemyHealth } from './EnemyHealth';
-
+import { UnitEnemy } from './UnitEnemy';
+import { UnitEnemySpawner } from '../utils/UnitEnemySpawner';
 export class PlayerSkill {
     scene: Phaser.Scene;
     player: Player;
@@ -14,6 +15,8 @@ export class PlayerSkill {
     playerSkillI4: Phaser.GameObjects.Image;
     hitbox: Phaser.Types.Physics.Arcade.ImageWithDynamicBody; // Create each hitbox for each skill
     damageOverlay: Phaser.GameObjects.Text;
+    unitEnemy: UnitEnemy;
+    unitEnemySpawner: UnitEnemySpawner;
 
     private static _playerSkill: PlayerSkill;
     private _isDoingSkill: boolean = false;
@@ -22,18 +25,21 @@ export class PlayerSkill {
     private _skill2Damage: number = 1153;
     private _skill4Damage: number = 1800;
     private _hitEnemy: boolean = false;
+    private _hitUnitEnemy: boolean = false;
 
     static get playerSkill() {
         return this._playerSkill;
     }
 
-    constructor(scene: Phaser.Scene, player: Player, enemy: Enemy, enemyHealth: EnemyHealth) {
+    constructor(scene: Phaser.Scene, player: Player, enemy: Enemy, enemyHealth: EnemyHealth, unitEnemy: UnitEnemy, unitEnemySpawner: UnitEnemySpawner) {
         PlayerSkill._playerSkill = this;
 
         this.scene = scene;
         this.player = player;
         this.enemy = enemy;
         this.enemyHealth = enemyHealth;
+        this.unitEnemy = unitEnemy;
+        this.unitEnemySpawner = unitEnemySpawner;
         this.createSkill();
         this.setupSkillInput();
     }
@@ -64,6 +70,10 @@ export class PlayerSkill {
 
     get hitEnemy() {
         return this._hitEnemy;
+    }
+
+    get hitUnitEnemy() {
+        return this._hitUnitEnemy;
     }
 
     private createSkill() {
@@ -171,8 +181,9 @@ export class PlayerSkill {
         this.hitbox.body.enable = true;
 
         // Set hitbox overlap callback
-        this.scene.physics.add.overlap(this.hitbox, this.enemy.enemy as unknown as Phaser.GameObjects.GameObject, this.handleHitboxEnemyOverlap, undefined, this);
-        // this.scene.physics.add.overlap(this.hitbox, this.unitEnemy as unknown as Phaser.GameObjects.GameObject, this.handleHitboxEnemyOverlap, undefined, this);
+        this.scene.physics.add.overlap(this.hitbox, this.enemy.enemy as unknown as Phaser.Physics.Arcade.Image, this.handleHitboxEnemyOverlap, undefined, this);
+
+        this.scene.physics.add.overlap(this.hitbox, this.unitEnemySpawner.unitEnemyGroup as unknown as Phaser.Physics.Arcade.Image, this.handleUnitEnemyOverlap, undefined, this);
     }
 
     private updateHitboxPosition(skill: string) {
@@ -243,12 +254,13 @@ export class PlayerSkill {
         if (!this._hitEnemy) {
             this._hitEnemy = true;
             const skill = hitbox.getData('skill'); // Retrieve the skill name from hitbox data
-            this.applyDamage(skill);
+            this.applyEnemyDamage(skill);
             this.showDamageOverlay(skill);
+            // console.log('Unit enemy', this.unitEnemy.unitEnemyGroup);
         }
     }
 
-    private applyDamage(skill: string) {
+    private applyEnemyDamage(skill: string) {
         // Apply damage to the enemy based on the skill used
         switch (skill) {
             case 'attack':
@@ -303,4 +315,10 @@ export class PlayerSkill {
             },
         });
     }
+
+    private handleUnitEnemyOverlap(hitbox: Phaser.Types.Physics.Arcade.ImageWithDynamicBody, unitEnemy: UnitEnemy) {
+        // Pass the specific unitEnemy to the takeDamage method
+        this.unitEnemySpawner.takeDamage(100, unitEnemy);
+    }
+
 }

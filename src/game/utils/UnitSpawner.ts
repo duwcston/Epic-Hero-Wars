@@ -17,8 +17,7 @@ export class UnitSpawner extends Unit {
         this.background = background;
         this.cooldownTime = 2000;
         this.createUnitSpawnerButton();
-        this.scene.events.on('update', this.updateUnitHealthBars, this);  // Listen to the update event
-
+        this.scene.events.on('update', this.updateUnitHealthBars, this);
     }
 
     private createUnitSpawnerButton() {
@@ -43,6 +42,7 @@ export class UnitSpawner extends Unit {
             this.unit = this.scene.physics.add.sprite(0, this.randomY(), 'unit').setDepth(10);
             this.unit.anims.play('walk');
             this.unitGroup.add(this.unit);
+            this.unitHealth = this.unitMaxHealth;
             this.scene.physics.add.collider(this.unit, this.background, () => { });
             this.unitInteraction();
             this.startCooldown();
@@ -101,5 +101,31 @@ export class UnitSpawner extends Unit {
         this.unitHealthBars.forEach(pair => {
             pair.healthBar.setPosition(pair.unit.x, pair.unit.y - 40);
         });
+    }
+
+    public takeDamage(damage: number, unit: Phaser.Physics.Arcade.Sprite) {
+        this.unitHealth -= damage;
+
+        if (this.unitHealth <= 0) {
+            // Only affect the specific unit that took damage
+            unit.anims.play('die', true);
+            // Get the current anims
+            if (unit.anims.currentAnim?.key === 'die') {
+                this.unitHealthBars.forEach(bar => {
+                    bar.healthBar.destroy();
+                });
+                unit.setVelocityX(0); // Stop the unit from moving
+            }
+
+            // Delay the destruction of this specific unit after the 'die' animation
+            this.scene.time.addEvent({
+                delay: 3000, // Longer delay for the 'die' animation
+                callback: () => {
+                    // unit.destroy();
+                    this.unitGroup.remove(unit, true, true);
+                },
+                loop: false
+            });
+        }
     }
 }

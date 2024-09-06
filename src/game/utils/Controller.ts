@@ -73,7 +73,6 @@ export class Controller {
                 ease: 'Linear',
                 duration: duration,
                 onUpdate: () => {
-                    this._updateSpineBodySize(playerSprite);
                     if (PlayerSkill.playerSkill.isDoingSkill) {
                         (playerSprite.body as Phaser.Physics.Arcade.Body).setVelocity(0);
                         moving.stop();
@@ -102,7 +101,6 @@ export class Controller {
                 ease: 'Linear',
                 duration: 1000,
                 onUpdate: () => {
-                    this._updateSpineBodySize(playerSprite);
                     if (PlayerSkill.playerSkill.isDoingSkill) {
                         (playerSprite.body as Phaser.Physics.Arcade.Body).setVelocity(0);
                         moving.stop();
@@ -131,7 +129,6 @@ export class Controller {
                 ease: 'Linear',
                 duration: 1000,
                 onUpdate: () => {
-                    this._updateSpineBodySize(playerSprite);
                     if (PlayerSkill.playerSkill.isDoingSkill) {
                         (playerSprite.body as Phaser.Physics.Arcade.Body).setVelocity(0);
                         moving.stop();
@@ -156,20 +153,14 @@ export class Controller {
 
     private _flipSpine(spine: SpineGameObject, flip: boolean, scale: number) {
         const body = spine.body as Phaser.Physics.Arcade.Body;
-        body.setSize(spine.width - 500, spine.height - 100);
+        body.setSize(600, 600);
         spine.scaleX = flip ? -scale : scale;
 
         if (flip) {
-            body.setOffset(spine.width - body.width, body.offset.y);
+            body.setOffset(950, 150);
         }
         else {
-            body.setOffset(500, 100);
-            body.setSize(spine.width - 500, spine.height - 100);
+            body.setOffset(450, 150);
         }
-    }
-
-    private _updateSpineBodySize(spine: SpineGameObject) {
-        const body = spine.body as Phaser.Physics.Arcade.Body;
-        body.setSize(spine.width - 600, spine.height - 100);
     }
 }

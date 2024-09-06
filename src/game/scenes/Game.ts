@@ -7,10 +7,11 @@ import { PlayerHealth } from '../sprites/PlayerHealth';
 import { EnemyHealth } from '../sprites/EnemyHealth';
 import { Border } from '../utils/Border';
 import { UnitSpawner } from '../utils/UnitSpawner';
-import { PlayerSkill } from '../sprites/PlayerSkill';
 import { Unit } from '../sprites/Unit';
 import { UnitEnemySpawner } from '../utils/UnitEnemySpawner';
 import { UnitEnemy } from '../sprites/UnitEnemy';
+import { PlayerSkill } from '../sprites/PlayerSkill';
+import { EnemySkill } from '../sprites/EnemySkill';
 
 export class Game extends Scene {
     camera: Phaser.Cameras.Scene2D.Camera;
@@ -35,10 +36,11 @@ export class Game extends Scene {
     playerHealth: PlayerHealth;
     enemyHealth: EnemyHealth;
     unitSpawner: UnitSpawner;
-    playerSkill: PlayerSkill;
     unit: Unit;
     unitEnemySpawner: UnitEnemySpawner;
     unitEnemy: UnitEnemy;
+    playerSkill: PlayerSkill;
+    enemySkill: EnemySkill;
 
     constructor() {
         super('Game');
@@ -91,7 +93,7 @@ export class Game extends Scene {
         this.player = new Player(this, this.background);
         this.playerHealth = new PlayerHealth(this);
 
-        this.enemy = new Enemy(this, this.background, this.player);
+        this.enemy = new Enemy(this, this.background);
         this.enemyHealth = new EnemyHealth(this);
 
         this.controller = new Controller(this, this.player);
@@ -99,10 +101,11 @@ export class Game extends Scene {
         this.unitSpawner = new UnitSpawner(this, this.enemy, this.background);
         this.unit = new Unit(this, this.enemy);
 
-        this.playerSkill = new PlayerSkill(this, this.player, this.enemy, this.enemyHealth);
-
         this.unitEnemySpawner = new UnitEnemySpawner(this, this.player, this.background);
         this.unitEnemy = new UnitEnemy(this, this.player);
+
+        this.playerSkill = new PlayerSkill(this, this.player, this.enemy, this.enemyHealth, this.unitEnemy, this.unitEnemySpawner);
+        this.enemySkill = new EnemySkill(this, this.enemy, this.player, this.playerHealth, this.unit, this.unitSpawner);
 
         EventBus.emit('current-scene-ready', this);
     }

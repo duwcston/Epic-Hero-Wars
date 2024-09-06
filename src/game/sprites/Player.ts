@@ -10,15 +10,15 @@ export class Player {
     }
 
     private _createPlayerImage(x: number, y: number) {
-        this.player = this.scene.add.spine(x, y, 'michael');
+        this.player = this.scene.add.spine(x + 150, y, 'michael');
         this.player.setScale(0.3);
         this.player.addAnimation(0, 'idle', true, 0);
 
         this.scene.physics.add.existing(this.player as unknown as Phaser.Physics.Arcade.Image);
 
         const body = this.player.body as Phaser.Physics.Arcade.Body;
-        body.setSize(this.player.width - 500, this.player.height - 100);
-        body.setOffset(250, 50);
+        body.setSize(600, 600);
+        body.setOffset(400, 50);
         body.setCollideWorldBounds(true);
         body.setGravity(0, 300);
         this.scene.physics.add.collider(this.player as unknown as Phaser.Physics.Arcade.Image, this.background, () => { });

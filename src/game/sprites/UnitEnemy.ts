@@ -5,7 +5,7 @@ export class UnitEnemy {
     scene: Phaser.Scene;
     unitEnemy: Phaser.Physics.Arcade.Sprite;
     player: Player;
-    protected unitEnemyGroup: Phaser.Physics.Arcade.Group;
+    public unitEnemyGroup: Phaser.Physics.Arcade.Group;
     protected unitEnemyMaxHealth: number = 100;
     protected unitEnemyHealth: number = this.unitEnemyMaxHealth;
     protected unitEnemyDamage: number = 10;
@@ -13,7 +13,10 @@ export class UnitEnemy {
 
     constructor(scene: Phaser.Scene, player: Player) {
         this.scene = scene;
-        this.unitEnemyGroup = this.scene.physics.add.group();
+        this.unitEnemyGroup = this.scene.physics.add.group({
+            maxSize: 20,
+            runChildUpdate: true
+        });
         this.player = player;
     }
 
@@ -23,7 +26,7 @@ export class UnitEnemy {
             callback: () => {
                 const units = this.unitEnemyGroup.getChildren();
                 units.forEach((unitEnemy) => {
-                    if (unitEnemy && this.player.player) {
+                    if (unitEnemy && this.player.player && this.unitEnemyHealth > 0) {
                         const distance = Phaser.Math.Distance.Between((unitEnemy as unknown as Phaser.Physics.Arcade.Sprite).x, (unitEnemy as unknown as Phaser.Physics.Arcade.Sprite).y, this.player.player.x, this.player.player.y);
                         if (distance < 100) {
                             this.attackEnemy(unitEnemy);
@@ -55,7 +58,6 @@ export class UnitEnemy {
     }
 
     private followEnemy(unitEnemy: Phaser.GameObjects.GameObject, speed: number) {
-        (unitEnemy as unknown as Phaser.Physics.Arcade.Sprite).anims.play('walk', true);
         this.scene.physics.moveToObject(unitEnemy, this.player.player as unknown as Phaser.Physics.Arcade.Sprite, speed);
     }
 
@@ -78,5 +80,4 @@ export class UnitEnemy {
             }
         });
     }
-
 }
