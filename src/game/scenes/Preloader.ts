@@ -58,8 +58,9 @@ export class Preloader extends Scene {
 
         // Load Athena's bullets
         this.load.setPath('assets/spine/athena/bullets/');
-        this.load.image('attack_shoot', 'attack_shoot.png');
-        this.load.image('attack_explode', 'attack_explode.png');
+        this.load.image('attack_shoot', 'FireBall.png');
+        this.load.image('attack_explode', 'fire 2.png');
+        this.load.atlas('skill2', 'skill2.png', 'skill2.json');
 
         // Load Borders
         this.load.setPath('assets/UI/borders/');
@@ -98,6 +99,13 @@ export class Preloader extends Scene {
             key: 'die',
             frames: this.anims.generateFrameNames('unit', { prefix: 'die', start: 1, end: 2, suffix: '-0' }),
             frameRate: 10,
+            repeat: 0
+        });
+
+        this.anims.create({
+            key: 'skill2',
+            frames: this.anims.generateFrameNames('skill2', { prefix: 'skill2_', start: 1, end: 11, suffix: '-0' }),
+            frameRate: 5,
             repeat: 0
         });
 

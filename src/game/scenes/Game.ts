@@ -99,9 +99,9 @@ export class Game extends Scene {
         this.controller = new Controller(this, this.player);
 
         this.unitSpawner = new UnitSpawner(this, this.enemy, this.background);
-        this.unit = new Unit(this, this.enemy);
-
         this.unitEnemySpawner = new UnitEnemySpawner(this, this.player, this.background);
+
+        this.unit = new Unit(this, this.enemy);
         this.unitEnemy = new UnitEnemy(this, this.player);
 
         this.playerSkill = new PlayerSkill(this, this.player, this.enemy, this.enemyHealth, this.unitEnemy, this.unitEnemySpawner);

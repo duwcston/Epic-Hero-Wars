@@ -1,6 +1,11 @@
 import { Unit } from "../sprites/Unit";
 import { Enemy } from "../sprites/Enemy";
 
+interface IUnitSpawner extends Phaser.Physics.Arcade.Sprite {
+    unitHealth: number;
+    unitHealthBar: Phaser.GameObjects.Graphics;
+}
+
 export class UnitSpawner extends Unit {
     unitSpawnerButton: Phaser.GameObjects.Image;
     background: Phaser.GameObjects.Image;
@@ -9,15 +14,22 @@ export class UnitSpawner extends Unit {
     cooldownText: Phaser.GameObjects.Text;
     skillOnCooldown: Phaser.GameObjects.Image;
     remainingCooldown: number;
-    unitHealthBars: { unit: Phaser.Physics.Arcade.Sprite, healthBar: Phaser.GameObjects.Image }[] = [];
+    private static _unitSpawner: UnitSpawner;
+
+    static get unitSpawner() {
+        return this._unitSpawner;
+    }
 
     constructor(scene: Phaser.Scene, enemy: Enemy, background: Phaser.GameObjects.Image) {
         super(scene, enemy);
+
+        UnitSpawner._unitSpawner = this;
+
         this.cooldown = false;
         this.background = background;
-        this.cooldownTime = 2000;
+        this.cooldownTime = 5000;
         this.createUnitSpawnerButton();
-        this.scene.events.on('update', this.updateUnitHealthBars, this);
+        this.scene.events.on('update', this.updateUnitHealthBarsPosition, this);
     }
 
     private createUnitSpawnerButton() {
@@ -38,19 +50,18 @@ export class UnitSpawner extends Unit {
             return;
         }
 
-        for (let i = 0; i < 2; i++) {
-            this.unit = this.scene.physics.add.sprite(0, this.randomY(), 'unit').setDepth(10);
-            this.unit.anims.play('walk');
-            this.unitGroup.add(this.unit);
-            this.unitHealth = this.unitMaxHealth;
-            this.scene.physics.add.collider(this.unit, this.background, () => { });
-            this.unitInteraction();
-            this.startCooldown();
+        // for (let i = 0; i < 2; i++) {
+        this.unit = this.scene.physics.add.sprite(0, this.randomY(), 'unit').setDepth(10);
+        this.unit.anims.play('walk');
+        this.unitGroup.add(this.unit);
+        (this.unit as IUnitSpawner).unitHealth = this.unitMaxHealth;
+        this.scene.physics.add.collider(this.unit, this.background, () => { });
+        this.unitInteraction();
+        this.startCooldown();
 
-            // Create health bar for each unit and store it
-            const healthBar = this.createUnitHealthBar(this.unit);
-            this.unitHealthBars.push({ unit: this.unit, healthBar });
-        }
+        // Create health bar for each unit and store it
+        (this.unit as IUnitSpawner).unitHealthBar = this.createUnitHealthBar(this.unit);
+        // }
     }
 
     private startCooldown() {
@@ -92,40 +103,61 @@ export class UnitSpawner extends Unit {
         }
     }
 
-    private createUnitHealthBar(unit: Phaser.Physics.Arcade.Sprite): Phaser.GameObjects.Image {
-        return this.scene.add.image(unit.x, unit.y, 'health_full').setDepth(10).setScale(0.2, 0.4);
+    private createUnitHealthBar(unit: Phaser.Physics.Arcade.Sprite): Phaser.GameObjects.Graphics {
+        const healthBar = this.scene.add.graphics();
+        const barWidth = 50;
+        const barHeight = 5;
+        const healthRatio = this.unitHealth / this.unitMaxHealth;
+
+        healthBar.fillStyle(0xff0000);
+        healthBar.fillRect(unit.x - barWidth / 2, unit.y - 40, barWidth * healthRatio, barHeight);
+
+        return healthBar;
     }
 
-    private updateUnitHealthBars() {
-        // Update the position of each health bar to match its unit's position
-        this.unitHealthBars.forEach(pair => {
-            pair.healthBar.setPosition(pair.unit.x, pair.unit.y - 40);
+    private updateUnitHealthBarsPosition() {
+        // Update the position of the health bar
+        this.unitGroup.getChildren().forEach((value: Phaser.GameObjects.GameObject) => {
+            const unit = value as Phaser.Physics.Arcade.Sprite & IUnitSpawner;
+            this.updateUnitHealthBar(unit);
         });
     }
 
-    public takeDamage(damage: number, unit: Phaser.Physics.Arcade.Sprite) {
-        this.unitHealth -= damage;
+    private updateUnitHealthBar(unit: Phaser.Physics.Arcade.Sprite) {
+        const healthRatio = this.unitHealth / this.unitMaxHealth;
+        const barWidth = 50;
+        const barHeight = 5;
 
-        if (this.unitHealth <= 0) {
-            // Only affect the specific unit that took damage
+        // Clear the previous health bar
+        (unit as IUnitSpawner).unitHealthBar.clear();
+
+        // Draw the new health bar
+        (unit as IUnitSpawner).unitHealthBar.fillStyle(0xff0000);
+        (unit as IUnitSpawner).unitHealthBar.fillRect(unit.x - barWidth / 2, unit.y - 40, barWidth * healthRatio, barHeight);
+    }
+
+    public takeDamage(damage: number, unit: Phaser.Physics.Arcade.Sprite) {
+        (unit as IUnitSpawner).unitHealth = Phaser.Math.Clamp(this.unitHealth - damage, 0, this.unitMaxHealth); // Clamp health between 0 and max
+        (unit as IUnitSpawner).unitHealth = (unit as IUnitSpawner).unitHealth - damage;
+        if ((unit as IUnitSpawner).unitHealth <= 0) {
             unit.anims.play('die', true);
-            // Get the current anims
+            this.scene.physics.world.remove(unit.body); // Remove physics body
             if (unit.anims.currentAnim?.key === 'die') {
-                this.unitHealthBars.forEach(bar => {
-                    bar.healthBar.destroy();
-                });
+                (unit as IUnitSpawner).unitHealthBar.destroy(); // Destroy the health bar on death
                 unit.setVelocityX(0); // Stop the unit from moving
+                unit.setActive(false);
             }
 
-            // Delay the destruction of this specific unit after the 'die' animation
             this.scene.time.addEvent({
-                delay: 3000, // Longer delay for the 'die' animation
+                delay: 500, // Longer delay for the 'die' animation
                 callback: () => {
-                    // unit.destroy();
                     this.unitGroup.remove(unit, true, true);
                 },
                 loop: false
             });
         }
+
+        // Update health bar after taking damage
+        // this.updateUnitHealthBar(unit);
     }
 }

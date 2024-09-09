@@ -117,7 +117,9 @@ export class PlayerSkill {
         this.scene.time.delayedCall(delay, () => {
             this.createHitbox(skill);
             this.updateHitboxPosition(skill);
-            this.hitbox.body.enable = true;
+            this.hitbox.visible = false;
+            this.hitbox.body.enable = false
+            // this.hitbox.body.enable = true;
             this.scene.physics.world.add(this.hitbox.body);
 
             this.scene.time.delayedCall(100, () => {
@@ -316,9 +318,8 @@ export class PlayerSkill {
         });
     }
 
-    private handleUnitEnemyOverlap(hitbox: Phaser.Types.Physics.Arcade.ImageWithDynamicBody, unitEnemy: UnitEnemy) {
-        // Pass the specific unitEnemy to the takeDamage method
-        this.unitEnemySpawner.takeDamage(100, unitEnemy);
+    private handleUnitEnemyOverlap(_hitbox: Phaser.Types.Physics.Arcade.ImageWithDynamicBody, unitEnemy: UnitEnemy) {
+        this.unitEnemySpawner.takeDamage(100, unitEnemy as unknown as Phaser.Physics.Arcade.Sprite);
     }
 
 }

@@ -90,7 +90,7 @@ export class EnemySkill {
     }
 
     private _randomlyCastSkill() {
-        const skills = ['attack'];
+        const skills = ['attack', 'skill2'];
         const randomSkill = Phaser.Utils.Array.GetRandom(skills);
         this.enemy.enemy.setAnimation(0, randomSkill, false);
         this.enemyIsCastingSkill = true;
@@ -100,6 +100,18 @@ export class EnemySkill {
 
             this.scene.time.addEvent({
                 delay: 1500,
+                callback: () => {
+                    this.enemyIsCastingSkill = false;
+                    this.enemy.enemy.setAnimation(0, 'idle', true);
+                }
+            });
+        }
+
+        if (randomSkill === 'skill2') {
+            this.skill2();
+
+            this.scene.time.addEvent({
+                delay: 2200,
                 callback: () => {
                     this.enemyIsCastingSkill = false;
                     this.enemy.enemy.setAnimation(0, 'idle', true);
@@ -127,17 +139,23 @@ export class EnemySkill {
 
     private _shootFireball() {
         const fireball = this.scene.physics.add.sprite(this.enemy.enemy.x, this.enemy.enemy.y - 100, 'attack_shoot')
-            .setScale(0.3)
+            .setScale(0.5)
             .setDepth(20);
         fireball.setVelocityX(-300);
+
+        this.scene.physics.add.overlap(fireball, this.player.player as unknown as Phaser.Physics.Arcade.Image, () => {
+            this.playerHealth.playerTakeDamage(1000);
+            fireball.destroy();
+        });
+
+        this.scene.physics.add.overlap(fireball, this.unitSpawner.unitGroup as unknown as Phaser.Physics.Arcade.Image, this.handleUnitOverlap, undefined, this);
 
         const explodeFireball = () => {
             fireball.destroy();
             const explosion = this.scene.add.sprite(fireball.x, fireball.y, 'attack_explode')
-                .setScale(0.5)
                 .setDepth(20);
 
-            const explosionHitbox = this.scene.add.rectangle(explosion.x, explosion.y, 150, 150);
+            const explosionHitbox = this.scene.add.rectangle(explosion.x, explosion.y, 100, 100);
             this.scene.physics.add.existing(explosionHitbox);
 
             this.scene.time.addEvent({
@@ -149,7 +167,7 @@ export class EnemySkill {
             });
 
             this.scene.physics.add.overlap(explosionHitbox, this.player.player as unknown as Phaser.Physics.Arcade.Image, () => {
-                this.playerHealth.playerTakeDamage(500);
+                this.playerHealth.playerTakeDamage(2000);
             });
 
             this.scene.physics.add.overlap(explosionHitbox, this.unitSpawner.unitGroup as unknown as Phaser.Physics.Arcade.Image, this.handleUnitOverlap, undefined, this);
@@ -163,7 +181,29 @@ export class EnemySkill {
         });
     }
 
-    private handleUnitOverlap(explosionHitbox: Phaser.GameObjects.GameObject, unit: Unit) {
-        this.unitSpawner.takeDamage(100, unit);
+    private skill2() {
+        const skill2 = this.scene.physics.add.sprite(this.enemy.enemy.x, this.enemy.enemy.y - 100, 'skill2')
+            .setScale(0.5)
+            .setDepth(20);
+        skill2.setVelocityX(-300);
+        skill2.anims.play('skill2');
+
+        this.scene.physics.add.overlap(skill2, this.player.player as unknown as Phaser.Physics.Arcade.Image, () => {
+            this.playerHealth.playerTakeDamage(10000);
+            skill2.destroy();
+        });
+
+        this.scene.physics.add.overlap(skill2, this.unitSpawner.unitGroup as unknown as Phaser.Physics.Arcade.Image, this.handleUnitOverlap, undefined, this);
+
+        this.scene.time.addEvent({
+            delay: 3000,
+            callback: () => {
+                skill2.destroy();
+            }
+        });
+    }
+
+    private handleUnitOverlap(_explosionHitbox: Phaser.GameObjects.GameObject, unit: Unit) {
+        this.unitSpawner.takeDamage(100, unit as unknown as Phaser.Physics.Arcade.Sprite);
     }
 }
