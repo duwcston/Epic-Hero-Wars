@@ -3,7 +3,7 @@ import { Game as MainGame } from './scenes/Game';
 import { AUTO, Game } from 'phaser';
 import { Preloader } from './scenes/Preloader';
 // import { GameOver } from './scenes/GameOver';
-// import { MainMenu } from './scenes/MainMenu';
+import { MainMenu } from './scenes/MainMenu';
 import 'phaser/plugins/spine/dist/SpinePlugin';
 
 const ratio = Math.max(window.innerWidth / window.innerHeight, window.innerHeight / window.innerWidth)
@@ -36,7 +36,7 @@ const config: Phaser.Types.Core.GameConfig = {
     scene: [
         Boot,
         Preloader,
-        // MainMenu,
+        MainMenu,
         MainGame,
         // GameOver
     ],

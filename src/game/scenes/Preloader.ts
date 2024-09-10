@@ -34,8 +34,6 @@ export class Preloader extends Scene {
         this.load.image('bottom_left', 'bottom_left.png');
         this.load.image('bottom_right', 'bottom_right.png');
         this.load.image('bottom_mid', 'bottom_mid.png');
-        this.load.image('top_cut_left', 'top_cut_left.png');
-        this.load.image('top_cut_right', 'top_cut_right.png');
         this.load.image('top_cut_mid', 'top_cut_mid.png');
         this.load.image('avatar_frame_left', 'avatar_frame_left.png');
         this.load.image('avatar_frame_right', 'avatar_frame_right.png');
@@ -110,7 +108,7 @@ export class Preloader extends Scene {
         });
 
         //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
-        // this.scene.start('MainMenu');
-        this.scene.start('Game');
+        this.scene.start('MainMenu');
+        // this.scene.start('Game');
     }
 }

@@ -11,6 +11,7 @@ export class Controller {
     arrowRightOn: Phaser.GameObjects.Image;
     private static _playerController: Controller;
     private _clickable: boolean;
+    private _currentTween: Phaser.Tweens.Tween;
 
     static get playerController() {
         return this._playerController;
@@ -52,96 +53,6 @@ export class Controller {
         this._clickable = value;
     }
 
-    private _moveSpine(pointer: Phaser.Input.Pointer) {
-        const playerSprite = this.player.player;
-        const distance = Math.abs(playerSprite.x - pointer.x);
-        const speed = PLAYER_SPEED;
-        const duration = (distance / speed) * 1000;
-
-        if (!PlayerSkill.playerSkill.isDoingSkill && this._clickable) {
-            if (pointer.x > playerSprite.x) {
-                this._flipSpine(playerSprite, false, 0.3);
-                (playerSprite.body as Phaser.Physics.Arcade.Body).setVelocity(speed, 0);
-            } else {
-                this._flipSpine(playerSprite, true, 0.3);
-                (playerSprite.body as Phaser.Physics.Arcade.Body).setVelocity(-speed, 0);
-            }
-            playerSprite.setAnimation(0, 'walk', true);
-            const moving = this.scene.tweens.add({
-                targets: playerSprite,
-                x: pointer.x,
-                ease: 'Linear',
-                duration: duration,
-                onUpdate: () => {
-                    if (PlayerSkill.playerSkill.isDoingSkill) {
-                        (playerSprite.body as Phaser.Physics.Arcade.Body).setVelocity(0);
-                        moving.stop();
-                    }
-                },
-                onComplete: () => {
-                    (playerSprite.body as Phaser.Physics.Arcade.Body).setVelocity(0);
-                    playerSprite.setAnimation(0, 'idle', true);
-                }
-            });
-        }
-    }
-
-    private _moveLeft() {
-        const playerSprite = this.player.player;
-        const speed = PLAYER_SPEED;
-
-        if (!PlayerSkill.playerSkill.isDoingSkill) {
-            this._flipSpine(playerSprite, true, 0.3);
-            (playerSprite.body as Phaser.Physics.Arcade.Body).setVelocity(-speed, 0);
-            playerSprite.setAnimation(0, 'walk', true);
-
-            const moving = this.scene.tweens.add({
-                targets: playerSprite,
-                x: playerSprite.x - 100,  // Move left by 100 pixels
-                ease: 'Linear',
-                duration: 1000,
-                onUpdate: () => {
-                    if (PlayerSkill.playerSkill.isDoingSkill) {
-                        (playerSprite.body as Phaser.Physics.Arcade.Body).setVelocity(0);
-                        moving.stop();
-                    }
-                },
-                onComplete: () => {
-                    (playerSprite.body as Phaser.Physics.Arcade.Body).setVelocity(0);
-                    playerSprite.setAnimation(0, 'idle', true);
-                }
-            });
-        }
-    }
-
-    private _moveRight() {
-        const playerSprite = this.player.player;
-        const speed = PLAYER_SPEED;
-
-        if (!PlayerSkill.playerSkill.isDoingSkill) {
-            this._flipSpine(playerSprite, false, 0.3);
-            (playerSprite.body as Phaser.Physics.Arcade.Body).setVelocity(speed, 0);
-            playerSprite.setAnimation(0, 'walk', true);
-
-            const moving = this.scene.tweens.add({
-                targets: playerSprite,
-                x: playerSprite.x + 100,  // Move right by 100 pixels
-                ease: 'Linear',
-                duration: 1000,
-                onUpdate: () => {
-                    if (PlayerSkill.playerSkill.isDoingSkill) {
-                        (playerSprite.body as Phaser.Physics.Arcade.Body).setVelocity(0);
-                        moving.stop();
-                    }
-                },
-                onComplete: () => {
-                    (playerSprite.body as Phaser.Physics.Arcade.Body).setVelocity(0);
-                    playerSprite.setAnimation(0, 'idle', true);
-                }
-            });
-        }
-    }
-
     public unclickable(pointer: Phaser.Input.Pointer) {
         if (pointer.y > this.scene.scale.height * 3 / 4) {
             this._clickable = false;
@@ -151,9 +62,110 @@ export class Controller {
         }
     }
 
+    private _moveSpine(pointer: Phaser.Input.Pointer) {
+        const playerSprite = this.player.player;
+        const distance = Math.abs(playerSprite.x - pointer.x);
+        const speed = PLAYER_SPEED;
+        const duration = (distance / speed) * 1000;
+    
+        if (!PlayerSkill.playerSkill.isDoingSkill && this._clickable) {
+            if (this._currentTween) {
+                this._currentTween.stop();  // Stop any existing tween
+            }
+    
+            if (pointer.x > playerSprite.x) {
+                this._flipSpine(playerSprite, false, 0.3);
+                (playerSprite.body as Phaser.Physics.Arcade.Body).setVelocity(speed, 0);
+            } else {
+                this._flipSpine(playerSprite, true, 0.3);
+                (playerSprite.body as Phaser.Physics.Arcade.Body).setVelocity(-speed, 0);
+            }
+            playerSprite.setAnimation(0, 'walk', true);
+            this._currentTween = this.scene.tweens.add({
+                targets: playerSprite,
+                x: pointer.x,
+                ease: 'Linear',
+                duration: duration,
+                onUpdate: () => {
+                    if (PlayerSkill.playerSkill.isDoingSkill) {
+                        (playerSprite.body as Phaser.Physics.Arcade.Body).setVelocity(0);
+                        this._currentTween.stop();
+                    }
+                },
+                onComplete: () => {
+                    (playerSprite.body as Phaser.Physics.Arcade.Body).setVelocity(0);
+                    playerSprite.setAnimation(0, 'idle', true);
+                }
+            });
+        }
+    }
+    
+    private _moveLeft() {
+        const playerSprite = this.player.player;
+        const speed = PLAYER_SPEED;
+    
+        if (!PlayerSkill.playerSkill.isDoingSkill) {
+            if (this._currentTween) {
+                this._currentTween.stop();  // Stop any existing tween
+            }
+    
+            this._flipSpine(playerSprite, true, 0.3);
+            (playerSprite.body as Phaser.Physics.Arcade.Body).setVelocity(-speed, 0);
+            playerSprite.setAnimation(0, 'walk', true);
+    
+            this._currentTween = this.scene.tweens.add({
+                targets: playerSprite,
+                x: playerSprite.x - 100, 
+                ease: 'Linear',
+                duration: 1000,
+                onUpdate: () => {
+                    if (PlayerSkill.playerSkill.isDoingSkill) {
+                        (playerSprite.body as Phaser.Physics.Arcade.Body).setVelocity(0);
+                        this._currentTween.stop();
+                    }
+                },
+                onComplete: () => {
+                    (playerSprite.body as Phaser.Physics.Arcade.Body).setVelocity(0);
+                    playerSprite.setAnimation(0, 'idle', true);
+                }
+            });
+        }
+    }
+    
+    private _moveRight() {
+        const playerSprite = this.player.player;
+        const speed = PLAYER_SPEED;
+    
+        if (!PlayerSkill.playerSkill.isDoingSkill) {
+            if (this._currentTween) {
+                this._currentTween.stop();  // Stop any existing tween
+            }
+    
+            this._flipSpine(playerSprite, false, 0.3);
+            (playerSprite.body as Phaser.Physics.Arcade.Body).setVelocity(speed, 0);
+            playerSprite.setAnimation(0, 'walk', true);
+    
+            this._currentTween = this.scene.tweens.add({
+                targets: playerSprite,
+                x: playerSprite.x + 100,  
+                ease: 'Linear',
+                duration: 1000,
+                onUpdate: () => {
+                    if (PlayerSkill.playerSkill.isDoingSkill) {
+                        (playerSprite.body as Phaser.Physics.Arcade.Body).setVelocity(0);
+                        this._currentTween.stop();
+                    }
+                },
+                onComplete: () => {
+                    (playerSprite.body as Phaser.Physics.Arcade.Body).setVelocity(0);
+                    playerSprite.setAnimation(0, 'idle', true);
+                }
+            });
+        }
+    }
+
     private _flipSpine(spine: SpineGameObject, flip: boolean, scale: number) {
         const body = spine.body as Phaser.Physics.Arcade.Body;
-        body.setSize(600, 600);
         spine.scaleX = flip ? -scale : scale;
 
         if (flip) {

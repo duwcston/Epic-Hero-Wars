@@ -46,9 +46,9 @@ export class EnemySkill {
         this.enemy.enemy.setAnimation(0, 'walk', true);
 
         if (this.player.player.x > this.enemy.enemy.x) {
-            this.flipSpine(false, 1);
+            this._flipSpine(false, 1);
         } else {
-            this.flipSpine(true, 1);
+            this._flipSpine(true, 1);
         }
 
         this.scene.time.addEvent({
@@ -77,9 +77,9 @@ export class EnemySkill {
         });
     }
 
-    public flipSpine(flip: boolean, scale: number) {
+    private _flipSpine(flip: boolean, scale: number) {
         const body = this.enemy.enemy.body as Phaser.Physics.Arcade.Body;
-        body.setSize(100, 150);
+        body.setSize(150, 150);
         this.enemy.enemy.scaleX = flip ? -scale : scale;
 
         if (flip) {
@@ -90,7 +90,7 @@ export class EnemySkill {
     }
 
     private _randomlyCastSkill() {
-        const skills = ['attack', 'skill2'];
+        const skills = ['skill2'];
         const randomSkill = Phaser.Utils.Array.GetRandom(skills);
         this.enemy.enemy.setAnimation(0, randomSkill, false);
         this.enemyIsCastingSkill = true;
