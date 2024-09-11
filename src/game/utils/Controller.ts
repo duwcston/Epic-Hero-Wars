@@ -169,10 +169,10 @@ export class Controller {
         spine.scaleX = flip ? -scale : scale;
 
         if (flip) {
-            body.setOffset(950, 150);
+            body.setOffset(950, 100);
         }
         else {
-            body.setOffset(450, 150);
+            body.setOffset(450, 100);
         }
     }
 }

@@ -2,8 +2,9 @@ import { Boot } from './scenes/Boot';
 import { Game as MainGame } from './scenes/Game';
 import { AUTO, Game } from 'phaser';
 import { Preloader } from './scenes/Preloader';
-// import { GameOver } from './scenes/GameOver';
 import { MainMenu } from './scenes/MainMenu';
+import { GameOver } from './scenes/GameOver';
+import { GameWin } from './scenes/GameWin';
 import 'phaser/plugins/spine/dist/SpinePlugin';
 
 const ratio = Math.max(window.innerWidth / window.innerHeight, window.innerHeight / window.innerWidth)
@@ -27,7 +28,7 @@ const config: Phaser.Types.Core.GameConfig = {
         default: 'arcade',
         arcade: {
             gravity: { x: 0, y: 0 },
-            debug: true,
+            debug: false,
             fps: 60,
             fixedStep: true,
             overlapBias: 128,
@@ -38,7 +39,8 @@ const config: Phaser.Types.Core.GameConfig = {
         Preloader,
         MainMenu,
         MainGame,
-        // GameOver
+        GameOver,
+        GameWin
     ],
     plugins: {
         scene: [

@@ -158,7 +158,7 @@ export class PlayerSkill {
                 break;
             case 'skill1':
                 width = 700;
-                height = 50;
+                height = 70;
                 color = 0x00ff00; // Green for skill1
                 break;
             case 'skill2':
@@ -201,7 +201,7 @@ export class PlayerSkill {
                 offsetY = -10;
                 break;
             case 'skill1':
-                offsetX = this.player.player.scaleX > 0 ? 400 : -400;
+                offsetX = this.player.player.scaleX > 0 ? 380 : -380;
                 offsetY = -25;
                 break;
             case 'skill2':
@@ -267,15 +267,34 @@ export class PlayerSkill {
         switch (skill) {
             case 'attack':
                 EnemyHealth.enemyHealth.takeDamage(this._attackDamage);
+                if (this.player.player.x > this.enemy.enemy.x) {
+                    this.enemy.enemy.x -= 50;
+                }
+                else {
+                    this.enemy.enemy.x += 50;
+                }
                 break;
             case 'skill1':
                 EnemyHealth.enemyHealth.takeDamage(this._skill1Damage);
+                this.scene.tweens.add({
+                    targets: this.enemy.enemy,
+                    y: this.enemy.enemy.y - 100,
+                    duration: 800,
+                    yoyo: true, 
+                    repeat: 0 
+                });
                 break;
             case 'skill2':
                 EnemyHealth.enemyHealth.takeDamage(this._skill2Damage);
                 break;
             case 'skill4':
                 EnemyHealth.enemyHealth.takeDamage(this._skill4Damage);
+                if (this.player.player.x > this.enemy.enemy.x) {
+                    this.enemy.enemy.x -= 50;
+                }
+                else {
+                    this.enemy.enemy.x += 50;
+                }
                 break;
             default:
                 break;

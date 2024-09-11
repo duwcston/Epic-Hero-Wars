@@ -37,6 +37,7 @@ export class Preloader extends Scene {
         this.load.image('top_cut_mid', 'top_cut_mid.png');
         this.load.image('avatar_frame_left', 'avatar_frame_left.png');
         this.load.image('avatar_frame_right', 'avatar_frame_right.png');
+        this.load.image('health_frame', 'health_frame.png');
 
         // Icons
         this.load.setPath('assets/UI/icons/');
@@ -69,12 +70,18 @@ export class Preloader extends Scene {
         this.load.setPath('assets/UI/buttons/');
         this.load.image('arrow_left', 'arrow_left.png');
         this.load.image('arrow_left_on', 'arrow_left_on.png');
-        this.load.image('health_frame', 'health_frame.png');
+        this.load.image('install_button', 'install_button.png');
+        this.load.image('install_button_on', 'install_button_on.png');
+
+        // Load Images
+        this.load.setPath('assets/UI/images/');
         this.load.image('health_empty', 'health_empty.png');
         this.load.image('health_full', 'health_full.png');
         this.load.image('health2_full', 'health2_full.png');
-        this.load.image('install_button', 'install_button.png');
-        this.load.image('install_button_on', 'install_button_on.png');
+        this.load.image('blood', 'blood.png');
+        this.load.image('light', 'light.png');
+        this.load.image('victory', 'victory.png');
+        this.load.image('defeat', 'defeat.png');
     }
 
     create() {

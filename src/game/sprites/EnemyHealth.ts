@@ -31,27 +31,6 @@ export class EnemyHealth {
         return this._enemyHealthText;
     }
 
-    // Fix the display of the enemy health bar
-    public takeDamage(damage: number) {
-        if (damage > 0) {
-            this._enemyHealth -= damage;
-            if (this._enemyHealth < 0) this._enemyHealth = 0;
-            this._enemyHealthText.setText(`${this._enemyHealth}`);
-            const damagePercentage = damage / this._enemyHealth;
-            // console.log('Health bar width before:', this.enemyHealthBar.width);
-            this.enemyHealthBar.width = this.enemyHealthBar.width - (this.enemyHealthBar.width * damagePercentage);
-            this.enemyHealthBar.setCrop(0, 0, this.enemyHealthBar.width, this.enemyHealthBar.height);
-            // console.log('Health bar width after:', this.enemyHealthBar.width);
-            this.scene.time.addEvent({
-                delay: 500,
-                callback: () => {
-                    this.enemyHealthEmpty.setCrop(0, 0, this.enemyHealthBar.width, this.enemyHealthBar.height);
-                },
-                loop: false
-            });
-        }
-    }
-
     private createEnemyHealthBar() {
         this.enemyHealthFrame = this.createEnemyHealthImage('health_frame');
         this.enemyHealthEmpty = this.createEnemyHealthImage('health_empty');
@@ -85,5 +64,23 @@ export class EnemyHealth {
             stroke: '#000000',
             strokeThickness: 6,
         }).setDepth(10);
+    }
+
+    public takeDamage(damage: number) {
+        if (damage > 0) {
+            this._enemyHealth -= damage;
+            if (this._enemyHealth < 0) this._enemyHealth = 0;
+            this._enemyHealthText.setText(`${this._enemyHealth}`);
+            const damagePercentage = damage / this._enemyHealth;
+            this.enemyHealthBar.width = this.enemyHealthBar.width - (this.enemyHealthBar.width * damagePercentage);
+            this.enemyHealthBar.setCrop(0, 0, this.enemyHealthBar.width, this.enemyHealthBar.height);
+            this.scene.time.addEvent({
+                delay: 500,
+                callback: () => {
+                    this.enemyHealthEmpty.setCrop(0, 0, this.enemyHealthBar.width, this.enemyHealthBar.height);
+                },
+                loop: false
+            });
+        }
     }
 }

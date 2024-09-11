@@ -69,12 +69,6 @@ export class Game extends Scene {
             .setScale(5, 0.7)
             .setOrigin(0.5, 1)
             .setScrollFactor(0);
-        // this.topCutLeft = this.add.image(0 - 15, -20, 'top_cut_left')
-        //     .setScale(0.8)
-        //     .setOrigin(0, 0);
-        // this.topCutRight = this.add.image(width as number + 15, -20, 'top_cut_right')
-        //     .setScale(0.8)
-        //     .setOrigin(1, 0);
         this.topCutMid = this.add.image(width as number / 2, 0, 'top_cut_mid')
             .setScale(4, 0.7)
             .setOrigin(0.5, 0)
@@ -105,12 +99,42 @@ export class Game extends Scene {
         this.unitEnemy = new UnitEnemy(this, this.player);
 
         this.playerSkill = new PlayerSkill(this, this.player, this.enemy, this.enemyHealth, this.unitEnemy, this.unitEnemySpawner);
-        this.enemySkill = new EnemySkill(this, this.enemy, this.player, this.playerHealth, this.unit, this.unitSpawner);
+        this.enemySkill = new EnemySkill(this, this.enemy, this.player, this.playerHealth, this.unit, this.unitSpawner, this.enemyHealth);
+        this.enemySkill.startAI();
 
         EventBus.emit('current-scene-ready', this);
     }
 
     update() {
         this.controller.unclickable(this.input.activePointer);
+
+        if (this.playerHealth.playerHealth <= 0) {
+            (this.player.player.body as Phaser.Physics.Arcade.Body).setVelocityX(0);
+            this.player.player.timeScale = 0.35;
+            this.player.player.setAnimation(0, 'die', false, true);
+            this.camera.zoomTo(1.5, 2400);
+            this.time.addEvent({
+                delay: 3500,
+                callback: () => {
+                    this.scene.pause('Game');
+                    this.scene.launch('GameOver');
+                },
+                callbackScope: this
+            });
+        }
+
+        if (this.enemyHealth.enemyHealth <= 0) {
+            this.enemy.enemy.timeScale = 0.5;
+            (this.enemy.enemy.body as Phaser.Physics.Arcade.Body).setVelocityX(0);
+            this.enemy.enemy.setAnimation(0, 'die', false, true);
+            this.time.addEvent({
+                delay: 1900,
+                callback: () => {
+                    this.scene.pause('Game');
+                    this.scene.launch('GameWin');
+                },
+                callbackScope: this
+            });
+        }
     }
 }

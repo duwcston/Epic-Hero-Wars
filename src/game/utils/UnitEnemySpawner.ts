@@ -18,7 +18,7 @@ export class UnitEnemySpawner extends UnitEnemy {
         return this._unitEnemySpawner;
     }
 
-    constructor(scene: Phaser.Scene, player: Player, background: Phaser.GameObjects.Image, cooldownTime: number = 10000) {
+    constructor(scene: Phaser.Scene, player: Player, background: Phaser.GameObjects.Image, cooldownTime: number = 3000) {
         super(scene, player);
 
         UnitEnemySpawner._unitEnemySpawner = this;

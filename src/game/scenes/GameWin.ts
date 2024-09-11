@@ -1,8 +1,8 @@
 import { Scene } from 'phaser';
 
-export class GameOver extends Scene {
+export class GameWin extends Scene {
     constructor() {
-        super({ key: 'GameOver' });
+        super({ key: 'GameWin' });
     }
 
     create(): void {
@@ -19,11 +19,11 @@ export class GameOver extends Scene {
             ease: 'Power2'
         });
 
-        // Display "Game Over" image
-        this.add.image(width / 2, height / 2 - 100, 'blood').setOrigin(0.5).setScale(2);
-        this.add.image(width / 2, height / 2 - 50, 'defeat').setOrigin(0.5).setDepth(1);
+        // Display "Game Win" image
+        this.add.image(width / 2, height / 2 - 50, 'light').setOrigin(0.5).setScale(4);
+        this.add.image(width / 2, height / 2 - 50, 'victory').setOrigin(0.5);
 
-        // Display "Restart" button
+        // // Display "Restart" button
         // const restartButton = this.add.text(width / 2, height / 2 + 10, 'Restart', {
         //     fontSize: '32px',
         //     color: '#ffffff',

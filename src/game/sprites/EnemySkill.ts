@@ -3,25 +3,28 @@ import { Player } from "./Player";
 import { PlayerHealth } from "./PlayerHealth";
 import { Unit } from "./Unit";
 import { UnitSpawner } from "../utils/UnitSpawner";
+import { EnemyHealth } from "./EnemyHealth";
 
 export class EnemySkill {
     scene: Phaser.Scene;
     enemy: Enemy;
     player: Player;
     playerHealth: PlayerHealth;
+    enemyHealth: EnemyHealth;
     speed: number;
     enemyIsCastingSkill: boolean = false;
     unit: Unit;
     unitSpawner: UnitSpawner;
 
-    constructor(scene: Phaser.Scene, enemy: Enemy, player: Player, playerHealth: PlayerHealth, unit: Unit, unitSpawner: UnitSpawner) {
+    constructor(scene: Phaser.Scene, enemy: Enemy, player: Player, playerHealth: PlayerHealth, unit: Unit, unitSpawner: UnitSpawner, enemyHealth: EnemyHealth) {
         this.scene = scene;
         this.enemy = enemy;
         this.player = player;
         this.playerHealth = playerHealth;
         this.unit = unit;
         this.unitSpawner = unitSpawner;
-        this.startAI();
+        this.enemyHealth = enemyHealth
+        // this.startAI();
     }
 
     public startAI() {
@@ -29,17 +32,23 @@ export class EnemySkill {
     }
 
     private _action() {
-        if (this.enemyIsCastingSkill) {
-            (this.enemy.enemy.body as Phaser.Physics.Arcade.Body).setVelocityX(0);
-            return;
-        }
-        this._randomlyMove();
+        // if (this.enemyHealth.enemyHealth > 0) {
+            if (this.enemyIsCastingSkill) {
+                (this.enemy.enemy.body as Phaser.Physics.Arcade.Body).setVelocityX(0);
+                return;
+            }
+            this._randomlyMove();
+        // }
+        // else {
+        //     return;
+        // }
     }
 
     private _randomlyMove() {
         const body = this.enemy.enemy.body as Phaser.Physics.Arcade.Body;
 
         this.speed = Phaser.Math.Between(100, 200);
+        body.setVelocityX(this.player.player.x > this.enemy.enemy.x ? this.speed : -this.speed);
         this.scene.physics.moveToObject(this.enemy.enemy as unknown as Phaser.Physics.Arcade.Image, this.player.player as unknown as Phaser.Physics.Arcade.Image, this.speed);
         const moveDuration = Phaser.Math.Between(1000, 2000);
 
@@ -90,7 +99,7 @@ export class EnemySkill {
     }
 
     private _randomlyCastSkill() {
-        const skills = ['skill2'];
+        const skills = ['attack', 'skill2'];
         const randomSkill = Phaser.Utils.Array.GetRandom(skills);
         this.enemy.enemy.setAnimation(0, randomSkill, false);
         this.enemyIsCastingSkill = true;
@@ -141,7 +150,12 @@ export class EnemySkill {
         const fireball = this.scene.physics.add.sprite(this.enemy.enemy.x, this.enemy.enemy.y - 100, 'attack_shoot')
             .setScale(0.5)
             .setDepth(20);
-        fireball.setVelocityX(-300);
+        if (this.enemy.enemy.x > this.player.player.x) {
+            fireball.setVelocityX(-500);
+        }
+        else {
+            fireball.setVelocityX(500);
+        }
 
         this.scene.physics.add.overlap(fireball, this.player.player as unknown as Phaser.Physics.Arcade.Image, () => {
             this.playerHealth.playerTakeDamage(1000);
@@ -185,7 +199,12 @@ export class EnemySkill {
         const skill2 = this.scene.physics.add.sprite(this.enemy.enemy.x, this.enemy.enemy.y - 100, 'skill2')
             .setScale(0.5)
             .setDepth(20);
-        skill2.setVelocityX(-300);
+        if (this.enemy.enemy.x > this.player.player.x) {
+            skill2.setVelocityX(-400);
+        }
+        else {
+            skill2.setVelocityX(400);
+        }
         skill2.anims.play('skill2');
 
         this.scene.physics.add.overlap(skill2, this.player.player as unknown as Phaser.Physics.Arcade.Image, () => {
@@ -196,7 +215,7 @@ export class EnemySkill {
         this.scene.physics.add.overlap(skill2, this.unitSpawner.unitGroup as unknown as Phaser.Physics.Arcade.Image, this.handleUnitOverlap, undefined, this);
 
         this.scene.time.addEvent({
-            delay: 3000,
+            delay: 2000,
             callback: () => {
                 skill2.destroy();
             }
