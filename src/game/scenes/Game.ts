@@ -100,7 +100,6 @@ export class Game extends Scene {
 
         this.playerSkill = new PlayerSkill(this, this.player, this.enemy, this.enemyHealth, this.unitEnemy, this.unitEnemySpawner);
         this.enemySkill = new EnemySkill(this, this.enemy, this.player, this.playerHealth, this.unit, this.unitSpawner, this.enemyHealth);
-        this.enemySkill.startAI();
 
         EventBus.emit('current-scene-ready', this);
     }

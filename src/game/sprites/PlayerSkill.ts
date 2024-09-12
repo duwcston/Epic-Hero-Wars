@@ -152,7 +152,7 @@ export class PlayerSkill {
         // Define hitbox properties based on the skill
         switch (skill) {
             case 'attack':
-                width = 370;
+                width = 400;
                 height = 50;
                 color = 0xff0000; // Red for attack
                 break;
@@ -167,8 +167,8 @@ export class PlayerSkill {
                 color = 0x0000ff; // Blue for skill2
                 break;
             case 'skill4':
-                width = 100;
-                height = 100;
+                width = 150;
+                height = 150;
                 color = 0xffff00; // Yellow for skill4
                 break;
             default:
@@ -193,8 +193,8 @@ export class PlayerSkill {
         let offsetY = 0;
         switch (skill) {
             case 'attack':
-                offsetX = this.player.player.scaleX > 0 ? 300 : -300;
-                offsetY = -80;
+                offsetX = this.player.player.scaleX > 0 ? 200 : -200;
+                offsetY = -60;
                 break;
             case 'attack_phase2':
                 offsetX = this.player.player.scaleX > 0 ? 320 : -320;

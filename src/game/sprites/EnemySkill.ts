@@ -24,7 +24,7 @@ export class EnemySkill {
         this.unit = unit;
         this.unitSpawner = unitSpawner;
         this.enemyHealth = enemyHealth
-        // this.startAI();
+        this.startAI();
     }
 
     public startAI() {
@@ -32,16 +32,12 @@ export class EnemySkill {
     }
 
     private _action() {
-        // if (this.enemyHealth.enemyHealth > 0) {
-            if (this.enemyIsCastingSkill) {
-                (this.enemy.enemy.body as Phaser.Physics.Arcade.Body).setVelocityX(0);
-                return;
-            }
-            this._randomlyMove();
-        // }
-        // else {
-        //     return;
-        // }
+        if (this.enemyIsCastingSkill) {
+            (this.enemy.enemy.body as Phaser.Physics.Arcade.Body).setVelocityX(0);
+            return;
+        }
+        console.log('randomly move');
+        this._randomlyMove();
     }
 
     private _randomlyMove() {
@@ -70,13 +66,15 @@ export class EnemySkill {
                     delay: Phaser.Math.Between(3000, 5000),
                     callback: () => {
                         if (Phaser.Math.Between(0, 1) === 0) {
+                            console.log('randomly cast skill');
                             this._randomlyCastSkill();
-                            this.scene.time.addEvent({
-                                delay: 2000,
-                                callback: () => {
-                                    this._action();
-                                }
-                            });
+                            // this.scene.time.addEvent({
+                            //     delay: 2000,
+                            //     callback: () => {
+                            //         this._action();
+                            //     }
+                            // });
+                            // this._action();
                         } else {
                             this._action();
                         }
@@ -103,30 +101,45 @@ export class EnemySkill {
         const randomSkill = Phaser.Utils.Array.GetRandom(skills);
         this.enemy.enemy.setAnimation(0, randomSkill, false);
         this.enemyIsCastingSkill = true;
-
+    
         if (randomSkill === 'attack') {
+            if (this.enemy.enemy.x > this.player.player.x) {
+                this._flipSpine(true, 1);
+            } else {
+                this._flipSpine(false, 1);
+            }
             this._shootFireballContinuously(3, 500);
-
+    
             this.scene.time.addEvent({
-                delay: 1500,
+                delay: 2500,
                 callback: () => {
-                    this.enemyIsCastingSkill = false;
-                    this.enemy.enemy.setAnimation(0, 'idle', true);
+                    this._endSkillCast();
                 }
             });
         }
-
+    
         if (randomSkill === 'skill2') {
             this.skill2();
-
+    
             this.scene.time.addEvent({
-                delay: 2200,
+                delay: 2500,
                 callback: () => {
-                    this.enemyIsCastingSkill = false;
-                    this.enemy.enemy.setAnimation(0, 'idle', true);
+                    this._endSkillCast();
                 }
             });
         }
+    }
+    
+    private _endSkillCast() {
+        this.enemyIsCastingSkill = false;
+        this.enemy.enemy.setAnimation(0, 'idle', true);
+        this.scene.time.addEvent({
+            delay: 2000,
+            callback: () => {
+                this._action();
+            }
+        });
+        // Add any additional logic here to ensure the enemy can perform actions again
     }
 
     private _shootFireballContinuously(count: number, interval: number) {
@@ -151,9 +164,11 @@ export class EnemySkill {
             .setScale(0.5)
             .setDepth(20);
         if (this.enemy.enemy.x > this.player.player.x) {
+            // this._flipSpine(true, 1);
             fireball.setVelocityX(-500);
         }
         else {
+            // this._flipSpine(false, 1);
             fireball.setVelocityX(500);
         }
 
@@ -188,7 +203,7 @@ export class EnemySkill {
         };
 
         this.scene.time.addEvent({
-            delay: 2000,
+            delay: 1000,
             callback: () => {
                 explodeFireball();
             }
@@ -200,9 +215,11 @@ export class EnemySkill {
             .setScale(0.5)
             .setDepth(20);
         if (this.enemy.enemy.x > this.player.player.x) {
+            this._flipSpine(true, 1);
             skill2.setVelocityX(-400);
         }
         else {
+            this._flipSpine(false, 1);
             skill2.setVelocityX(400);
         }
         skill2.anims.play('skill2');
